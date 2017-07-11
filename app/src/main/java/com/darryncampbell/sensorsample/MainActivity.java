@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final float[] mOrientationAngles = new float[3];
     private static String LOG_TAG = "SensorSample";
     private float maximumProximitySensorRange;
+    private boolean mCompassSupported = true;
     private Sensor sensor_accelerometer;
     private Sensor sensor_magnetic_field;
     private Sensor sensor_proximity;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensor_magnetic_field = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (sensor_magnetic_field == null)
             Log.i(LOG_TAG, "Magnetic field sensor not available on device");
+        if (sensor_accelerometer == null || sensor_magnetic_field == null)
+            compassNotSupported();
         sensor_proximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if (sensor_proximity == null)
             Log.i(LOG_TAG, "Proximity sensor not available on device");
@@ -180,13 +183,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //Log.d(LOG_TAG, "Orientation Azimuth (X) = " + RadiansToDegrees(mOrientationAngles[0]));
         //Log.d(LOG_TAG, "Orientation Pitch (Y) = " + RadiansToDegrees(mOrientationAngles[1]));
         //Log.d(LOG_TAG, "Orientation Roll (Z) = " + RadiansToDegrees(mOrientationAngles[2]));
-        txtAzmiuth.setText("" + RadiansToDegrees(mOrientationAngles[0]));
-        txtPitch.setText("" + RadiansToDegrees(mOrientationAngles[1]));
-        txtRoll.setText("" + RadiansToDegrees(mOrientationAngles[2]));
+        if (mCompassSupported)
+        {
+            txtAzmiuth.setText("" + RadiansToDegrees(mOrientationAngles[0]));
+            txtPitch.setText("" + RadiansToDegrees(mOrientationAngles[1]));
+            txtRoll.setText("" + RadiansToDegrees(mOrientationAngles[2]));
+        }
     }
 
     private double RadiansToDegrees(float radians)
     {
         return radians * (180.0f / Math.PI);
+    }
+
+    private void compassNotSupported() {
+        mCompassSupported = false;
     }
 }
